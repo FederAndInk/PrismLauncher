@@ -1,0 +1,41 @@
+name: Check Formatting
+
+on:
+  push:
+  pull_request:
+jobs:
+  format_check:
+    runs-on: ubuntu-20.04
+    env:
+      CLANG_FORMAT: /usr/bin/clang-format-12
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: install packages
+        run: |
+          sudo apt-get -y update
+          sudo apt-get -y install clang-format-12 colordiff jq
+      - name: precheck
+        run: |
+          pwd
+          git --version
+          git status
+          git show --stat
+          git show --stat HEAD~
+          echo "github.base_ref: ${{ github.base_ref }}"
+          echo "github.ref: ${{ github.ref }}"
+          echo "github.head_ref: ${{ github.head_ref }}"
+          echo "github.event.before: ${{ github.event.before }}"
+          echo "github.event.after: ${{ github.event.after }}"
+          echo "github.event:"
+          cat ${{ github.event_path }}
+      - name: check formatting pull request
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "Running formatting check against ${{ github.base_ref }}"
+          ${{ github.workspace }}/.github/scripts/apply-format.sh ${{ github.base_ref }} --
+      - name: check formatting push
+        if: github.event_name == 'push'
+        run: |
+          ${{ github.workspace }}/.github/scripts/apply-format.sh $(cat ${{ github.event_path }} | jq -r '.commits[0].id')~ || echo "::warning ::Please run clang-format on your modifications"
