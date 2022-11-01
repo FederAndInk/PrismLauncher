@@ -193,7 +193,7 @@ public:
     bool openJsonEditor(const QString &filename);
 
     InstanceWindow *showInstanceWindow(InstancePtr instance, QString page = QString());
-    MainWindow *showMainWindow(bool minimized = false);
+    MainWindow *showMainWindow(bool minimized = false); // this is a test 2
 
     void updateIsRunning(bool running);
     bool updatesAreAllowed();
@@ -216,6 +216,7 @@ public slots:
         InstancePtr instance,
         bool online = true,
         bool demo = false,
+        // this is a test
         BaseProfilerFactory *profiler = nullptr,
         MinecraftServerTargetPtr serverToJoin = nullptr,
         MinecraftAccountPtr accountToUse = nullptr
